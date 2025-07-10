@@ -115,3 +115,26 @@ class Cache:
             The integer value or None if key doesn't exist.
         """
         return self.get(key, fn=int)
+
+def replay(method: Callable) -> None:
+    """
+    Display the history of calls of a particular function.
+
+    It prints how many times the function was called,
+    then lists all inputs and outputs from Redis.
+    """
+    redis_client = method.__self__._redis  # access redis instance from bound method
+    method_name = method.__qualname__
+    calls = redis_client.get(method_name)
+    try:
+        calls_int = int(calls) if calls else 0
+    except Exception:
+        calls_int = 0
+
+    print(f"{method_name} was called {calls_int} times:")
+
+    inputs = redis_client.lrange(f"{method_name}:inputs", 0, -1)
+    outputs = redis_client.lrange(f"{method_name}:outputs", 0, -1)
+
+    for inp, out in zip(inputs, outputs):
+        print(f"{method_name}(*{inp.decode()}) -> {out.decode()}")
