@@ -116,6 +116,8 @@ class Cache:
         """
         return self.get(key, fn=int)
 
+from typing import Callable
+
 def replay(method: Callable) -> None:
     """
     Display the history of calls of a particular function.
@@ -123,8 +125,9 @@ def replay(method: Callable) -> None:
     It prints how many times the function was called,
     then lists all inputs and outputs from Redis.
     """
-    redis_client = method.__self__._redis  # access redis instance from bound method
-    method_name = method.__qualname__
+    redis_client = method.__self__._redis  # access Redis client from bound method
+    method_name = method.__qualname__  # e.g., "Cache.store"
+
     calls = redis_client.get(method_name)
     try:
         calls_int = int(calls) if calls else 0
