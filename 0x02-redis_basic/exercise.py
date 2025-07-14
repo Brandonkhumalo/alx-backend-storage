@@ -119,9 +119,6 @@ class Cache:
 from typing import Callable
 
 
-from typing import Callable
-
-
 def replay(method: Callable) -> None:
     """
     Display the history of calls of a particular function.
@@ -149,4 +146,3 @@ def replay(method: Callable) -> None:
         decoded_input = inp.decode()
         decoded_output = out.decode()
         print(f"{method_name}(*{decoded_input}) -> {decoded_output}")
-
