@@ -37,15 +37,14 @@ def cache_page(expiration: int = 10) -> Callable:
             if cached:
                 return cached.decode('utf-8')
             result = method(url, *args, **kwargs)
-            # Cache the result with expiration
             redis_client.setex(f"cached:{url}", expiration, result)
             return result
         return wrapper
     return decorator
 
 
-@cache_page(expiration=10)
 @count_calls
+@cache_page(expiration=10)
 def get_page(url: str) -> str:
     """
     Fetch HTML content of the given URL using requests.
@@ -59,4 +58,3 @@ def get_page(url: str) -> str:
     response = requests.get(url)
     response.raise_for_status()
     return response.text
-
